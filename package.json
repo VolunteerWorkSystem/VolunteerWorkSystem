@@ -1,0 +1,10 @@
+{
+  "type": "module",
+  "scripts": {
+    "dev": "cd frontend && npm run dev",
+    "ngrok": "ngrok start --all --config=./ngrok.yaml",
+    "test": "npm run test:server && npm run test:client",
+    "test:server": "cd server && npm test",
+    "test:client": "cd client && npm test"
+  }
+}

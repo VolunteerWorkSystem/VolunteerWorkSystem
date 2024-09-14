@@ -12,21 +12,6 @@ export const AuthProvider = (props) => {
     token: undefined,
   })
 
-  const fetchUserProfile = async () => {
-    const { newJwtToken, lineProfile } = await authProvider.loginByLiff()
-    const jwtToken = newJwtToken ? newJwtToken : (authState.token as string)
-
-    setAuthState({
-      ...authState,
-      user: {
-        ...authState.user,
-        ...lineProfile,
-        // ...newHighWallProfile 
-      },
-      token: jwtToken,
-    })
-  }
-
   const updateStateFromToken = () => {
     const token = authProvider.getToken()
     if (token) {
@@ -51,7 +36,10 @@ export const AuthProvider = (props) => {
   useEffect(() => {
     const init = async () => {
       try {
-        await authProvider.init()
+        const result = await authProvider.init()
+        if (result?.redirect) {
+          return
+        }
         updateStateFromToken()
       } catch (error) {
         console.error('Unknown login error: ', error)
@@ -74,7 +62,6 @@ export const AuthProvider = (props) => {
       value={{
         authState,
         logout: authProvider.logout,
-        fetchUserProfile: fetchUserProfile,
       }}
     >
       {props.children}

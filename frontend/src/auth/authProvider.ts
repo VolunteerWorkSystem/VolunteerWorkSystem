@@ -3,6 +3,7 @@ import { isJwtExpired } from './utils'
 import { Profile } from './services'
 import config from './config'
 import liff from "@line/liff"
+import { dataProvider } from '../dataProvider'
 
 const apiUrl = `${config.authProviderUrl}`
 
@@ -48,8 +49,7 @@ const authProvider = {
     }
 
     if (!authProvider.getToken()) {
-      const { redirect } = await authProvider.liffLogin()
-      if (redirect) return
+      return await authProvider.liffLogin()
     }
   },
 
@@ -78,28 +78,22 @@ const authProvider = {
 
   // called when the user attempts to log in
   socialLogin: async (provider: 'Line', socialIdToken: string) => {
-    // const action = `users/social_login?provider=${'Line'}`
 
-    // const response = await fetch(`${apiUrl}/${action}`, {
-    //   method: 'POST',
-    //   headers: {
-    //     ...commonHeaders,
-    //   },
-    //   body: JSON.stringify({
-    //     id_token: socialIdToken,
-    //   }),
-    // })
-    // const resJson = await response.json()
-    // if (response.status < 200 || response.status >= 300) {
-    //   throw new Error(response.statusText + ': ' + resJson.result)
-    // }
-
-    // const { token } = resJson
-
-    const token = socialIdToken
-    localStorage.setItem('token', token)
-
-    return Promise.resolve(token)
+    const {
+      data, // only present if 2XX response
+      error, // only present if 4XX or 5XX response
+    } = await dataProvider.GET("/auth/login/line", {
+      headers: {
+        Authorization: `Bearer ${socialIdToken}`,
+      },
+    });
+    if (error) {
+      throw new Error(error)
+    }
+  
+    const { access_token } = data
+    localStorage.setItem('token', access_token)
+    return Promise.resolve(access_token)
   },
 
   getToken: () => {
@@ -132,7 +126,7 @@ const authProvider = {
   // called when the user clicks on the logout button
   logout: () => {
     localStorage.removeItem('token')
-    liff.logout()
+    // liff.logout()
     return Promise.resolve()
   },
   // called when the API returns an error

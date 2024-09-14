@@ -7,6 +7,7 @@ import {
 import { AuthLayout } from './auth/AuthLayout';
 import { VolunteerPage } from './volunteer';
 import { router as adminRouter } from './admin';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 
 
@@ -22,12 +23,16 @@ const router = createBrowserRouter([
   },
 ]);
 
+const queryClient = new QueryClient()
 
 function App() {
 
   return (
     <>
-      <RouterProvider router={router} />
+      <QueryClientProvider client={queryClient}>
+        <RouterProvider router={router} />
+      </QueryClientProvider>
+
     </>
   )
 }

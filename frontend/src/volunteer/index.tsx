@@ -8,6 +8,7 @@ import liff from '@line/liff';
 import { useState, useEffect, Suspense } from 'react';
 import Scanner from '../scanner/Scanner';
 import { useSnackbar } from '../snackbar/context';
+import { dataProvider } from '../dataProvider';
 
 
 export function VolunteerPage() {
@@ -19,6 +20,12 @@ export function VolunteerPage() {
   const [scannerOpen, setScannerOpen] = useState(false)
   const isLineScanOk = liff && liff.scanCode !== undefined && liff.isInClient()
 
+  // debug tool: call onQrcodeDetected when ?action=checkin is in url
+  useEffect(() => {
+    if (window.location.search.includes('action=checkin')) {
+      onQrcodeDetected('debug')
+    }
+  }, [])
 
   const reset = () => {
     setScannerOpen(false)
@@ -41,6 +48,12 @@ export function VolunteerPage() {
     // } else {
     //   onUrlDetected(newDetectResult)
     // }
+
+    const {
+      data: checkInData,
+      error: checkInError,
+    } = dataProvider.POST('/check-ins')
+
   }
   useEffect(() => {
     async function lineScan() {
@@ -80,7 +93,7 @@ export function VolunteerPage() {
             height: 64,
           }}
           alt="Avatar"
-          src={user?.picture}
+          src={user?.pictureUrl}
         />
         <Typography>
           {user?.name}
