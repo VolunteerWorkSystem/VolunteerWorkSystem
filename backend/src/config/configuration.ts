@@ -2,12 +2,13 @@ import { MyConfig } from './type';
 import getDefaultConfig from './default';
 import developmentConfig from './development';
 import stagingConfig from './staging';
+import productionConfig from './production';
 import customEnvironmentConfig from './custom-environment-variables';
 
 const envConfigs = {
   development: developmentConfig,
   staging: stagingConfig,
-  // production: productionConfig,
+  production: productionConfig,
 };
 
 export default (): MyConfig => {
