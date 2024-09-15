@@ -129,7 +129,7 @@ const authProvider = {
   // called when the user clicks on the logout button
   logout: () => {
     localStorage.removeItem('token')
-    // liff.logout()
+    liff.logout()
     return Promise.resolve()
   },
   // called when the API returns an error
