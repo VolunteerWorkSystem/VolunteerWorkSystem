@@ -18,6 +18,7 @@ export class LineJwtStrategy extends PassportStrategy(Strategy, 'line-jwt') {
     // https://developers.line.biz/en/reference/line-login/#verify-id-token
     // POST /oauth2/v2.1/verify (ID token)
     // 200 OK(user ID, name, picture URL, email)
+    console.log({ token });
     const result = await fetch('https://api.line.me/oauth2/v2.1/verify', {
       method: 'POST',
       headers: {

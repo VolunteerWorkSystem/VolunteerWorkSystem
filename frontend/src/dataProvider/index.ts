@@ -9,10 +9,10 @@ const myMiddleware: Middleware = {
   async onRequest({ request }) {
     // set authorization header
     const token = localStorage.getItem("token");
-    if (token) {
+    if (token && !request.headers.has("Authorization")) {
       request.headers.set("Authorization", `Bearer ${token}`);
     } else {
-      request.headers.delete("Authorization");
+      // request.headers.delete("Authorization");
     }
     return request;
   },

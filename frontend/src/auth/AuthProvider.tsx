@@ -36,6 +36,7 @@ export const AuthProvider = (props) => {
   useEffect(() => {
     const init = async () => {
       try {
+        console.log('init')
         const result = await authProvider.init()
         if (result?.redirect) {
           return

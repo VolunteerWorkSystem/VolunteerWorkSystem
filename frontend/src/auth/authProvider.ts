@@ -29,6 +29,7 @@ const authProvider = {
     }
 
     const newIDToken = liff.getIDToken()
+    console.log({ newIDToken })
     if (!newIDToken) {
       console.error('newIDToken not found')
       throw new Error('newIDToken not found')
@@ -47,8 +48,8 @@ const authProvider = {
       console.error('initializeLiff Error: ', error)
       throw error
     }
-
     if (!authProvider.getToken()) {
+      console.log('liffLogin')
       return await authProvider.liffLogin()
     }
   },
@@ -63,6 +64,7 @@ const authProvider = {
       }
 
       const newIDToken = liff.getIDToken()
+      console.log({ newIDToken })
       newJwtToken = await authProvider.socialLogin('Line', newIDToken)
     } catch (error) {
       console.log('Liff Error', error)
@@ -93,6 +95,7 @@ const authProvider = {
   
     const { access_token } = data
     localStorage.setItem('token', access_token)
+    console.log({ access_token })
     return Promise.resolve(access_token)
   },
 
