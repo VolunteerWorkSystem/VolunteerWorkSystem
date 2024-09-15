@@ -10,6 +10,7 @@ import Scanner from '../scanner/Scanner';
 import { useSnackbar } from '../snackbar/context';
 import { dataProvider } from '../dataProvider';
 import { useMutation } from '@tanstack/react-query';
+import { useDebounceCallback } from 'usehooks-ts'
 
 
 export function VolunteerPage() {
@@ -60,8 +61,8 @@ export function VolunteerPage() {
     }
   })
 
-
-  const onQrcodeDetected = (newDetectResult: string) => {
+  // debounced function
+  const onQrcodeDetected = useDebounceCallback((newDetectResult: string) => {
     setScannerOpen(false)
     try {
       vibrate()
@@ -69,15 +70,6 @@ export function VolunteerPage() {
       console.log('no vibrate')
     }
 
-    // if (step === MutationByUserStep.ScanningCups) {
-    //   if (mutationType === undefined) {
-    //     throw Error('未知錯誤：請選擇租借或歸還')
-    //   }
-    //   setCupId(newDetectResult)
-    //   setStep(MutationByUserStep.Confirming)
-    // } else {
-    //   onUrlDetected(newDetectResult)
-    // }
     if (newDetectResult.includes('checkin')) {
       checkIn()
     }
@@ -85,7 +77,8 @@ export function VolunteerPage() {
       checkOut()
     }
 
-  }
+  }, 200)
+
   useEffect(() => {
     async function lineScan() {
       if (scannerOpen && isLineScanOk && liff.scanCode) {
