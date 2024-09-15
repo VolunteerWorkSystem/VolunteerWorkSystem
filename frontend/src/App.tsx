@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import './App.css'
 import {
   createBrowserRouter,
@@ -8,6 +7,8 @@ import { AuthLayout } from './auth/AuthLayout';
 import { VolunteerPage } from './volunteer';
 import { router as adminRouter } from './admin';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { SnackbarProvider, useSnackbar } from './snackbar/context';
+import { NotificationDialog } from './snackbar/components';
 
 
 
@@ -29,11 +30,36 @@ function App() {
 
   return (
     <>
-      <QueryClientProvider client={queryClient}>
-        <RouterProvider router={router} />
-      </QueryClientProvider>
+      <SnackbarProvider>
 
+        <QueryClientProvider client={queryClient}>
+          <RouterProvider router={router} />
+        </QueryClientProvider>
+        <SnackbarSection />
+      </SnackbarProvider>
     </>
+  )
+}
+
+function SnackbarSection() {
+  const { snackbar, setSnackbar } = useSnackbar()
+  // return (
+  //   <Snackbar
+  //     open={snackbar.open}
+  //     severity={snackbar.severity}
+  //     onClose={() => setSnackbar({ ...snackbar, open: false })}
+  //     timeout={snackbar?.timeout || 5000}
+  //   >
+  //     {snackbar.message}
+  //   </Snackbar>
+  // )
+  return (
+    <NotificationDialog
+      open={snackbar.open}
+      message={snackbar.message}
+      isError={snackbar.severity === 'error'}
+      onClose={() => setSnackbar({ ...snackbar, open: false })}
+    ></NotificationDialog>
   )
 }
 

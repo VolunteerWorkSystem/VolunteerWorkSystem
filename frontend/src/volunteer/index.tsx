@@ -1,5 +1,5 @@
 
-import { Typography, Avatar, Button, Divider, Link, Dialog } from '@mui/material'
+import { Typography, Avatar, Button, Divider, Link, Dialog, Box } from '@mui/material'
 import { useAuth } from '../auth/hooks'
 import { parseError, vibrate } from '../utils'
 import Grid from '@mui/material/Grid2';
@@ -9,6 +9,7 @@ import { useState, useEffect, Suspense } from 'react';
 import Scanner from '../scanner/Scanner';
 import { useSnackbar } from '../snackbar/context';
 import { dataProvider } from '../dataProvider';
+import { useMutation } from '@tanstack/react-query';
 
 
 export function VolunteerPage() {
@@ -22,14 +23,43 @@ export function VolunteerPage() {
 
   // debug tool: call onQrcodeDetected when ?action=checkin is in url
   useEffect(() => {
-    if (window.location.search.includes('action=checkin')) {
-      onQrcodeDetected('debug')
+    if (window.location.search.includes('checkin')) {
+      onQrcodeDetected('checkin')
+    }
+    if (window.location.search.includes('checkout')) {
+      onQrcodeDetected('checkout')
     }
   }, [])
 
   const reset = () => {
     setScannerOpen(false)
   }
+
+  const { mutate: checkIn } = useMutation({
+    mutationFn: async () => {
+      const { data } = await dataProvider.POST('/check-ins/checkin')
+      return data
+    },
+    onError: (error) => {
+      handleError(error)
+    },
+    onSuccess: (data) => {
+      handleNotification('簽到成功')
+    }
+  })
+  const { mutate: checkOut } = useMutation({
+    mutationFn: async () => {
+      const { data } = await dataProvider.POST('/check-ins/checkout')
+      return data
+    },
+    onError: (error) => {
+      handleError(error)
+    },
+    onSuccess: (data) => {
+      handleNotification('簽退成功')
+    }
+  })
+
 
   const onQrcodeDetected = (newDetectResult: string) => {
     setScannerOpen(false)
@@ -48,11 +78,12 @@ export function VolunteerPage() {
     // } else {
     //   onUrlDetected(newDetectResult)
     // }
-
-    const {
-      data: checkInData,
-      error: checkInError,
-    } = dataProvider.POST('/check-ins')
+    if (newDetectResult.includes('checkin')) {
+      checkIn()
+    }
+    if (newDetectResult.includes('checkout')) {
+      checkOut()
+    }
 
   }
   useEffect(() => {
@@ -78,7 +109,12 @@ export function VolunteerPage() {
   }, [scannerOpen, isLineScanOk])
 
   return (
-    <>
+    <Box sx={{
+      maxWidth: 800,
+      margin: '0 auto',
+      padding: '2rem',
+      textAlign: 'center',
+    }}>
       <Typography variant='h4'>
         志工打卡系統
       </Typography>
@@ -146,7 +182,7 @@ export function VolunteerPage() {
         </Suspense>
       </Dialog>
 
-    </>
+    </Box>
   )
 }
 

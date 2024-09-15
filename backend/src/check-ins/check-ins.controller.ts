@@ -19,15 +19,15 @@ import { JwtAuthGuard } from 'src/auth/jwt/jwt-auth.guard';
 export class CheckInsController {
   constructor(private readonly checkInsService: CheckInsService) {}
 
-  @Post()
+  @Post('checkin')
   @UseGuards(JwtAuthGuard)
   async checkIn(@CurrentUser() user: User) {
     return this.checkInsService.checkIn(user.id);
   }
 
-  @Post('checkout/:checkInId')
-  async checkOut(@Param('checkInId') checkInId: number) {
-    return this.checkInsService.checkOut(checkInId);
+  @Post('checkout')
+  async checkOut(@CurrentUser() user: User) {
+    return this.checkInsService.checkOut(user.id);
   }
 
   // @Post()

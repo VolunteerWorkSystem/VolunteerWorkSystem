@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CheckIn } from './entities/check-in.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/users/entities/user.entity';
-import { Repository } from 'typeorm';
+import { IsNull, Repository } from 'typeorm';
 
 @Injectable()
 export class CheckInsService {
@@ -19,6 +19,15 @@ export class CheckInsService {
       throw new NotFoundException('User not found');
     }
 
+    // Check if user has already checked in
+    const existingCheckIn = await this.checkInsRepository.findOneBy({
+      user: { id: userId },
+      checkOutTime: null,
+    });
+    if (existingCheckIn) {
+      throw new NotFoundException('已經簽到過了喔！');
+    }
+
     const checkIn = this.checkInsRepository.create({
       user,
       checkInTime: new Date(),
@@ -26,10 +35,14 @@ export class CheckInsService {
     return this.checkInsRepository.save(checkIn);
   }
 
-  async checkOut(checkInId: number): Promise<CheckIn> {
-    const checkIn = await this.checkInsRepository.findOneBy({ id: checkInId });
+  async checkOut(userId: string): Promise<CheckIn> {
+    const checkIn = await this.checkInsRepository.findOneBy({
+      user: { id: userId },
+      checkOutTime: IsNull(),
+    });
+    console.log(checkIn);
     if (!checkIn) {
-      throw new NotFoundException('Check-in not found');
+      throw new NotFoundException('尚未簽到！');
     }
     checkIn.checkOutTime = new Date();
     return this.checkInsRepository.save(checkIn);
@@ -42,6 +55,9 @@ export class CheckInsService {
   findAll() {
     return this.checkInsRepository.find({
       relations: ['user'],
+      order: {
+        checkInTime: 'DESC',
+      },
     });
   }
 

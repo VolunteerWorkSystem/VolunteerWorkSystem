@@ -29,7 +29,7 @@ export class AuthService {
 
   checkPermission(user: User) {
     if (user.role === Role.Unverified) {
-      throw new UnauthorizedException('使用者未註冊，請聯絡管理員');
+      // throw new UnauthorizedException('使用者未註冊，請聯絡管理員');
     }
   }
 
