@@ -77,7 +77,7 @@ export function VolunteerPage() {
       checkOut()
     }
 
-  }, 200)
+  }, 1000)
 
   useEffect(() => {
     async function lineScan() {
