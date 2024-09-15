@@ -22,7 +22,7 @@ export class CheckInsService {
     // Check if user has already checked in
     const existingCheckIn = await this.checkInsRepository.findOneBy({
       user: { id: userId },
-      checkOutTime: null,
+      checkOutTime: IsNull(),
     });
     if (existingCheckIn) {
       throw new NotFoundException('已經簽到過了喔！');
