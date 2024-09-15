@@ -22,10 +22,13 @@ import { CheckInsModule } from './check-ins/check-ins.module';
     }),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
-      useFactory: (configService: ConfigService<MyConfig>) => ({
-        ...configService.get('db', { infer: true }),
-        autoLoadEntities: true,
-      }),
+      useFactory: (configService: ConfigService<MyConfig>) => {
+        console.log(configService.get('db', { infer: true }));
+        return {
+          ...configService.get('db', { infer: true }),
+          autoLoadEntities: true,
+        };
+      },
     }),
     UsersModule,
     AuthModule,
