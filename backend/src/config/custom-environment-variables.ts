@@ -12,7 +12,7 @@ import { plainToInstance } from 'class-transformer';
 export enum Environment {
   Development = 'development',
   Staging = 'staging',
-  // Production = 'production',
+  Production = 'production',
   // Test = 'test',
 }
 
