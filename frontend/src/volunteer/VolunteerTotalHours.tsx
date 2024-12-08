@@ -30,25 +30,33 @@ const VolunteerTotalHours: React.FC = () => {
                     const hoursMap = new Map<string, VolunteerHours>();
 
                     data.forEach(checkIn => {
-                        const userId = checkIn.user.id;
-                        const hours = (new Date(checkIn.checkOutTime).getTime() - new Date(checkIn.checkInTime).getTime()) / (1000 * 60 * 60);
+                        if (!checkIn.checkOutTime) return; // Skip if no checkout time
 
-                        if (!hoursMap.has(userId)) {
+                        const userId = checkIn.user.id;
+                        const checkInTime = new Date(checkIn.checkInTime);
+                        const checkOutTime = new Date(checkIn.checkOutTime);
+                        
+                        // Only calculate if checkout time is after checkin time
+                        if (checkOutTime > checkInTime) {
+                            const hours = (checkOutTime.getTime() - checkInTime.getTime()) / (1000 * 60 * 60);
+
+                            if (!hoursMap.has(userId)) {
+                                hoursMap.set(userId, {
+                                    name: checkIn.user.name || 'Unknown',
+                                    totalHours: 0,
+                                    lastActive: checkIn.checkOutTime
+                                });
+                            }
+
+                            const current = hoursMap.get(userId)!;
+                            const lastActiveDate = new Date(current.lastActive);
+                            
                             hoursMap.set(userId, {
-                                name: checkIn.user.name || 'Unknown',
-                                totalHours: 0,
-                                lastActive: checkIn.checkOutTime
+                                ...current,
+                                totalHours: current.totalHours + hours,
+                                lastActive: checkOutTime > lastActiveDate ? checkIn.checkOutTime : current.lastActive
                             });
                         }
-
-                        const current = hoursMap.get(userId)!;
-                        hoursMap.set(userId, {
-                            ...current,
-                            totalHours: current.totalHours + hours,
-                            lastActive: new Date(current.lastActive) > new Date(checkIn.checkOutTime)
-                                ? current.lastActive
-                                : checkIn.checkOutTime
-                        });
                     });
 
                     setVolunteers(Array.from(hoursMap.values()));

@@ -10,6 +10,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { SnackbarProvider, useSnackbar } from './snackbar/context';
 import { NotificationDialog } from './snackbar/components';
 import VolunteerTotalHours from './volunteer/VolunteerTotalHours';
+import AdminLayout from './admin/layout';
 
 const router = createBrowserRouter([
   {
@@ -17,12 +18,14 @@ const router = createBrowserRouter([
     element: <AuthLayout />,
     children: [
       { index: true, element: <VolunteerPage /> },
-      { 
-        path: 'admin', 
+      {
+        path: 'admin',
+        element: <AdminLayout />,
         children: [
-          ...adminRouter.children || [],
-          { path: 'total-hours', element: <VolunteerTotalHours /> }
-        ]
+          { index: true, element: adminRouter.children[0].element },
+          { path: 'checkins', element: adminRouter.children[1].element },
+          { path: 'total-hours', element: <VolunteerTotalHours /> },
+        ],
       },
     ],
   },
@@ -31,11 +34,9 @@ const router = createBrowserRouter([
 const queryClient = new QueryClient()
 
 function App() {
-
   return (
     <>
       <SnackbarProvider>
-
         <QueryClientProvider client={queryClient}>
           <RouterProvider router={router} />
         </QueryClientProvider>
@@ -47,16 +48,6 @@ function App() {
 
 function SnackbarSection() {
   const { snackbar, setSnackbar } = useSnackbar()
-  // return (
-  //   <Snackbar
-  //     open={snackbar.open}
-  //     severity={snackbar.severity}
-  //     onClose={() => setSnackbar({ ...snackbar, open: false })}
-  //     timeout={snackbar?.timeout || 5000}
-  //   >
-  //     {snackbar.message}
-  //   </Snackbar>
-  // )
   return (
     <NotificationDialog
       open={snackbar.open}
