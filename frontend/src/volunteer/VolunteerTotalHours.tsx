@@ -10,8 +10,7 @@ import {
     Typography,
 } from '@mui/material';
 import React, { useEffect, useState } from 'react';
-import createClient from 'openapi-fetch';
-import type { paths } from '../openapi/types';
+import { dataProvider } from '../dataProvider';
 
 interface VolunteerHours {
     name: string;
@@ -25,21 +24,15 @@ const VolunteerTotalHours: React.FC = () => {
     useEffect(() => {
         const fetchVolunteerHours = async () => {
             try {
-                const client = createClient<paths>({
-                    baseUrl: import.meta.env.VITE_API_URL,
-                });
-                const { data, error } = await client.GET('/check-ins');
-                if (error) {
-                    throw error;
-                }
+                const { data } = await dataProvider.GET('/check-ins');
                 if (data) {
                     // Transform check-ins data to volunteer hours format
                     const hoursMap = new Map<string, VolunteerHours>();
-                    
+
                     data.forEach(checkIn => {
                         const userId = checkIn.user.id;
                         const hours = (new Date(checkIn.checkOutTime).getTime() - new Date(checkIn.checkInTime).getTime()) / (1000 * 60 * 60);
-                        
+
                         if (!hoursMap.has(userId)) {
                             hoursMap.set(userId, {
                                 name: checkIn.user.name || 'Unknown',
@@ -47,17 +40,17 @@ const VolunteerTotalHours: React.FC = () => {
                                 lastActive: checkIn.checkOutTime
                             });
                         }
-                        
+
                         const current = hoursMap.get(userId)!;
                         hoursMap.set(userId, {
                             ...current,
                             totalHours: current.totalHours + hours,
-                            lastActive: new Date(current.lastActive) > new Date(checkIn.checkOutTime) 
-                                ? current.lastActive 
+                            lastActive: new Date(current.lastActive) > new Date(checkIn.checkOutTime)
+                                ? current.lastActive
                                 : checkIn.checkOutTime
                         });
                     });
-                    
+
                     setVolunteers(Array.from(hoursMap.values()));
                 }
             } catch (error) {
