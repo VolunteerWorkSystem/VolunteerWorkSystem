@@ -11,7 +11,9 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
-import MailIcon from '@mui/icons-material/Mail';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import QrCodeIcon from '@mui/icons-material/QrCode';
+import HistoryIcon from '@mui/icons-material/History';
 import { Link, Outlet } from "react-router-dom";
 
 const drawerWidth = 240;
@@ -48,7 +50,7 @@ export default function AdminLayout() {
           <ListItem disablePadding>
             <ListItemButton component={Link} to={""}>
               <ListItemIcon>
-                <InboxIcon />
+                <QrCodeIcon />
               </ListItemIcon>
               <ListItemText primary={"簽到簽退QRCODE"} />
             </ListItemButton>
@@ -56,21 +58,27 @@ export default function AdminLayout() {
           <ListItem disablePadding>
             <ListItemButton component={Link} to={"checkins"}>
               <ListItemIcon>
-                <InboxIcon />
+                <HistoryIcon />
               </ListItemIcon>
               <ListItemText primary={"打卡紀錄"} />
             </ListItemButton>
           </ListItem>
+          <ListItem disablePadding>
+            <ListItemButton component={Link} to={"total-hours"}>
+              <ListItemIcon>
+                <AccessTimeIcon />
+              </ListItemIcon>
+              <ListItemText primary={"志工總時數"} />
+            </ListItemButton>
+          </ListItem>
         </List>
         <Divider />
-
       </Drawer>
       <Box
         component="main"
         sx={{ flexGrow: 1, bgcolor: 'background.default' }}
       >
         <Toolbar />
-
         <Outlet />
       </Box>
     </Box>
