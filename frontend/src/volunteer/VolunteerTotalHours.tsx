@@ -28,12 +28,37 @@ const VolunteerTotalHours: React.FC = () => {
                 const client = createClient<paths>({
                     baseUrl: import.meta.env.VITE_API_URL,
                 });
-                const { data, error } = await client.GET('/volunteer/total-hours');
+                const { data, error } = await client.GET('/check-ins');
                 if (error) {
                     throw error;
                 }
                 if (data) {
-                    setVolunteers(data);
+                    // Transform check-ins data to volunteer hours format
+                    const hoursMap = new Map<string, VolunteerHours>();
+                    
+                    data.forEach(checkIn => {
+                        const userId = checkIn.user.id;
+                        const hours = (new Date(checkIn.checkOutTime).getTime() - new Date(checkIn.checkInTime).getTime()) / (1000 * 60 * 60);
+                        
+                        if (!hoursMap.has(userId)) {
+                            hoursMap.set(userId, {
+                                name: checkIn.user.name || 'Unknown',
+                                totalHours: 0,
+                                lastActive: checkIn.checkOutTime
+                            });
+                        }
+                        
+                        const current = hoursMap.get(userId)!;
+                        hoursMap.set(userId, {
+                            ...current,
+                            totalHours: current.totalHours + hours,
+                            lastActive: new Date(current.lastActive) > new Date(checkIn.checkOutTime) 
+                                ? current.lastActive 
+                                : checkIn.checkOutTime
+                        });
+                    });
+                    
+                    setVolunteers(Array.from(hoursMap.values()));
                 }
             } catch (error) {
                 console.error('Error fetching volunteer hours:', error);
@@ -78,4 +103,4 @@ const VolunteerTotalHours: React.FC = () => {
     );
 };
 
-export default VolunteerTotalHours; 
+export default VolunteerTotalHours;

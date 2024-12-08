@@ -17,9 +17,13 @@ const router = createBrowserRouter([
     element: <AuthLayout />,
     children: [
       { index: true, element: <VolunteerPage /> },
-      { path: 'total-hours', element: <VolunteerTotalHours /> },
-      { path: 'admin', ...adminRouter },
-      /* existing routes */
+      { 
+        path: 'admin', 
+        children: [
+          ...adminRouter.children || [],
+          { path: 'total-hours', element: <VolunteerTotalHours /> }
+        ]
+      },
     ],
   },
 ]);
