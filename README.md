@@ -103,6 +103,8 @@ LINE_CLIENT_SECRET=your-line-client-secret
 
 ## 系統架構
 
+(非 monorepo，只是放在相同目錄下)
+
 ```
 frontend/
 ├── src/
