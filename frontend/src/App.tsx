@@ -9,8 +9,7 @@ import { router as adminRouter } from './admin';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { SnackbarProvider, useSnackbar } from './snackbar/context';
 import { NotificationDialog } from './snackbar/components';
-
-
+import VolunteerTotalHours from './volunteer/VolunteerTotalHours';
 
 const router = createBrowserRouter([
   {
@@ -18,6 +17,7 @@ const router = createBrowserRouter([
     element: <AuthLayout />,
     children: [
       { index: true, element: <VolunteerPage /> },
+      { path: 'total-hours', element: <VolunteerTotalHours /> },
       { path: 'admin', ...adminRouter },
       /* existing routes */
     ],

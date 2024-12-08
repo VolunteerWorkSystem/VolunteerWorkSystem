@@ -6,5 +6,8 @@
     "test": "npm run test:server && npm run test:client",
     "test:server": "cd server && npm test",
     "test:client": "cd client && npm test"
+  },
+  "dependencies": {
+    "qrcode.react": "^4.1.0"
   }
 }
